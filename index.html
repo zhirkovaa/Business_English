@@ -526,7 +526,7 @@ const state = {
   phrases: [],
   streak: parseInt(localStorage.getItem('streak') || '0'),
   lastDate: localStorage.getItem('lastDate') || '',
-  sessionStart: Date.now(),
+  sessionStart: null,
   apiKey: localStorage.getItem('claudeApiKey') || '',
   conversationHistory: [],
   timerInterval: null,
@@ -858,6 +858,7 @@ function addPhrase(p) {
 // ─── TIMER ────────────────────────────────────────────────────────────────────
 function startTimer() {
   state.timerInterval = setInterval(() => {
+    if (!state.sessionStart) return;
     const elapsed = Math.floor((Date.now() - state.sessionStart) / 1000);
     const mins = String(Math.floor(elapsed / 60)).padStart(2, '0');
     const secs = String(elapsed % 60).padStart(2, '0');
@@ -907,6 +908,7 @@ function startApp() {
   document.getElementById('levelDisplay').textContent = state.userLevel;
   document.getElementById('onboarding').style.display = 'none';
 
+  state.sessionStart = Date.now();
   updateStreak();
   startTimer();
 
