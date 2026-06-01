@@ -395,8 +395,28 @@
         </select>
       </div>
       <div>
-        <div class="field-label">Your role / industry</div>
-        <input class="field-input" id="userRole" placeholder="e.g. Business Analyst, CRM & ERP" />
+        <div class="field-label">Your profession (anything — scenarios adapt to it)</div>
+        <input class="field-input" id="userRole" list="roleSuggestions" placeholder="e.g. Software Engineer, Nurse, Marketing Manager…" />
+        <datalist id="roleSuggestions">
+          <option value="Software Engineer"></option>
+          <option value="Business Analyst"></option>
+          <option value="Product Manager"></option>
+          <option value="Project Manager"></option>
+          <option value="Data Scientist"></option>
+          <option value="UX/UI Designer"></option>
+          <option value="Marketing Manager"></option>
+          <option value="Sales Representative"></option>
+          <option value="Consultant"></option>
+          <option value="Accountant"></option>
+          <option value="HR Specialist"></option>
+          <option value="Lawyer"></option>
+          <option value="Doctor"></option>
+          <option value="Nurse"></option>
+          <option value="Teacher"></option>
+          <option value="Customer Support Specialist"></option>
+          <option value="Operations Manager"></option>
+          <option value="Financial Analyst"></option>
+        </datalist>
       </div>
       <div>
         <div class="field-label">Goal</div>
@@ -428,10 +448,10 @@
     <div class="sidebar-title">Today's Scenarios</div>
     <button class="scenario-btn active" data-scenario="interview" onclick="selectScenario(this)">
       <span class="scenario-icon">🎯</span>Job Interview
-      <div class="scenario-label">ING Bank · Senior BA</div>
+      <div class="scenario-label">Tailored to your role</div>
     </button>
     <button class="scenario-btn" data-scenario="meeting" onclick="selectScenario(this)">
-      <span class="scenario-icon">💼</span>Sprint Review
+      <span class="scenario-icon">💼</span>Status Meeting
       <div class="scenario-label">Stakeholder update</div>
     </button>
     <button class="scenario-btn" data-scenario="negotiation" onclick="selectScenario(this)">
@@ -455,8 +475,8 @@
   <!-- CENTER: Chat -->
   <div class="chat-area">
     <div class="chat-header">
-      <h2 id="scenarioTitle">Job Interview — ING Bank, Amsterdam</h2>
-      <p id="scenarioDesc">You are speaking with a hiring manager. Answer as you would in a real interview.</p>
+      <h2 id="scenarioTitle">Job Interview</h2>
+      <p id="scenarioDesc">A hiring manager is interviewing you. Answer as you would in a real interview.</p>
     </div>
     <div class="messages" id="messages"></div>
     <div class="input-area">
@@ -532,45 +552,56 @@ const state = {
   timerInterval: null,
 };
 
-// ─── SCENARIO CONFIG ──────────────────────────────────────────────────────────
-const scenarios = {
-  interview: {
-    title: 'Job Interview — ING Bank, Amsterdam',
-    desc: 'You are speaking with a hiring manager. Answer as you would in a real interview.',
-    systemContext: 'Act as a strict but fair hiring manager at ING Bank Amsterdam. You are interviewing a Senior Business Analyst / Product Owner with CRM, ERP, and Power Platform experience. Ask realistic, probing interview questions. After each user response, provide: CORRECTIONS (grammar/vocabulary), NATURAL VERSION (how a native professional would say it), FEEDBACK (brief, focused), NEXT QUESTION (increasingly challenging). Be direct. Do not accept vague answers — push for specifics.',
-    opener: `Good morning! Thank you for coming in. I'm the hiring manager for our Digital CRM team here at ING. I've reviewed your CV — strong background in CRM and Power Platform.\n\n**Let's start simply:** Tell me what drives you as a Business Analyst. Not what you do — but *why* you do this work. Take your time.`,
-  },
-  meeting: {
-    title: 'Sprint Review — Stakeholder Meeting',
-    desc: 'You are presenting sprint results to a sceptical senior stakeholder.',
-    systemContext: 'Act as a senior stakeholder (VP of Operations) in a sprint review. You are sceptical, busy, and expect clear, structured communication. After each user response, provide: CORRECTIONS, NATURAL VERSION, FEEDBACK, NEXT QUESTION. Push the user to be more precise, structured, and confident.',
-    opener: `Right, let's get started — I only have 20 minutes. Walk me through what the team delivered this sprint. I want outcomes, not activities.`,
-  },
-  negotiation: {
-    title: 'Scope Negotiation — Client Pushback',
-    desc: 'A client is pushing back on your project scope. Hold your position professionally.',
-    systemContext: 'Act as a demanding client who is unhappy with the project scope and wants more features within the same budget and timeline. After each user response, provide: CORRECTIONS, NATURAL VERSION, FEEDBACK, NEXT QUESTION. Challenge the user to negotiate firmly but diplomatically.',
-    opener: `I have to be honest — I expected more from this phase. You've delivered the basics, but we need the reporting module AND the integration with our ERP by end of month. That was always part of the deal, wasn't it?`,
-  },
-  presentation: {
-    title: 'Board Presentation — Roadmap Pitch',
-    desc: 'You are presenting a 12-month product roadmap to the board. They ask tough questions.',
-    systemContext: 'Act as a board member — analytical, impatient, focused on ROI and risk. After each user response, provide: CORRECTIONS, NATURAL VERSION, FEEDBACK, NEXT QUESTION. Push for clarity on priorities, business value, and risk mitigation.',
-    opener: `Thank you for the presentation. Before we discuss the roadmap, I need to understand the business case. Why should we invest in this CRM overhaul now? What is the expected return, and what happens if we delay six months?`,
-  },
-  smalltalk: {
-    title: 'Office Small Talk — Monday Morning',
-    desc: 'Your Dutch colleague starts a conversation at the coffee machine.',
-    systemContext: 'Act as a friendly Dutch colleague making small talk at the office. Topics: weekend, work, projects, Dutch culture. After each user response, provide: CORRECTIONS, NATURAL VERSION, FEEDBACK, NEXT QUESTION. Focus on natural, fluent conversational English. Penalise overly formal or robotic responses.',
-    opener: `Hey! Good morning — how was your weekend? Did you do anything fun, or was it mostly relaxing? I spent mine trying to cycle in the rain, very Dutch of me I suppose! 😄`,
-  },
-  email: {
-    title: 'Difficult Email — Escalation Response',
-    desc: 'Draft a professional response to an escalation email from a frustrated client.',
-    systemContext: 'Act as an email coach. Present an escalation email from a frustrated client. Ask the user to draft a professional response. After each draft, provide: CORRECTIONS, NATURAL VERSION, FEEDBACK, NEXT QUESTION (a new email challenge). Focus on tone, structure, and professional vocabulary.',
-    opener: `Here is an escalation email you just received. Draft your response:\n\n---\n*Subject: URGENT — Project delays are unacceptable*\n\nDear team,\n\nI am extremely disappointed with the lack of progress on our CRM implementation. We are now three weeks behind schedule and I have received no proactive communication from your side. If this is not resolved by end of week, we will be forced to escalate to your management and reconsider the contract.\n\nRegards,\nDavid Chen, COO*\n\n---\n\nHow would you respond? Write your reply now.`,
-  },
-};
+// ─── SCENARIO CONFIG (role-aware) ─────────────────────────────────────────────
+// Scenarios are built dynamically from the user's profession so every branch
+// (engineer, analyst, manager, designer, sales, etc.) gets tailored practice.
+let scenarios = {};
+
+function buildScenarios(role) {
+  const r = role || 'professional';
+  const coach = 'After each user response, always provide CORRECTIONS, NATURAL VERSION, FEEDBACK, and NEXT QUESTION.';
+  return {
+    interview: {
+      title: `Job Interview — ${r}`,
+      desc: `A hiring manager is interviewing you for a ${r} role. Answer as you would in a real interview.`,
+      systemContext: `Act as a strict but fair hiring manager at a respected company, interviewing the user for a ${r} position. Ask realistic, probing interview questions relevant to a ${r}'s daily work, skills, and challenges. ${coach} Be direct and do not accept vague answers — push for concrete examples from a ${r}'s experience.`,
+      opener: `Good morning, thank you for coming in. I'm the hiring manager for this ${r} role and I've reviewed your CV.\n\n**Let's start simply:** Tell me what drives you as a ${r}. Not what you do — but *why* you do this work. Take your time.`,
+    },
+    meeting: {
+      title: `Team Update — Status Meeting`,
+      desc: `You are updating a sceptical senior stakeholder on your work as a ${r}.`,
+      systemContext: `Act as a busy, sceptical senior stakeholder in a status meeting with a ${r}. Expect clear, structured communication about outcomes relevant to a ${r}'s work. ${coach} Push the user to be more precise, structured, and confident.`,
+      opener: `Right, let's get started — I only have 15 minutes. Walk me through what you delivered this week as a ${r}. I want outcomes and impact, not a list of tasks.`,
+    },
+    negotiation: {
+      title: `Negotiation — Pushback`,
+      desc: `Someone is pushing back on your scope, deadline, or proposal. Hold your position professionally.`,
+      systemContext: `Act as a demanding counterpart (client, manager, or partner) negotiating with a ${r}. You want more, faster, or cheaper than is realistic. ${coach} Challenge the user to negotiate firmly but diplomatically, using arguments a ${r} would actually make.`,
+      opener: `I'll be honest — I expected more by now. I need this done sooner and with more included than we agreed. As the ${r} on this, you can make that happen, right?`,
+    },
+    presentation: {
+      title: `Presentation — Pitch & Defend`,
+      desc: `You are presenting a plan or proposal and must defend it under tough questioning.`,
+      systemContext: `Act as an analytical, impatient decision-maker (board member or senior leader) hearing a ${r} present a plan or proposal. Focus on value, priorities, and risk. ${coach} Push for clarity on business value and trade-offs a ${r} should be able to justify.`,
+      opener: `Thank you for the presentation. Before we go further, give me the business case in two minutes: why should we invest in this now, what's the expected return, and what's the risk if we wait six months?`,
+    },
+    smalltalk: {
+      title: `Office Small Talk`,
+      desc: `A colleague starts a casual conversation at the coffee machine.`,
+      systemContext: `Act as a friendly colleague making small talk with a ${r} at the office. Topics: weekend, work, projects, culture. ${coach} Focus on natural, fluent conversational English. Gently flag overly formal or robotic responses.`,
+      opener: `Hey, good morning! How was your weekend? Did you do anything fun, or was it mostly relaxing? Mine was pretty quiet — I finally caught up on some sleep. 😄`,
+    },
+    email: {
+      title: `Difficult Email — Escalation`,
+      desc: `Draft a professional response to an escalation email.`,
+      systemContext: `Act as an email-writing coach for a ${r}. Present a realistic escalation or difficult email a ${r} might receive, and ask the user to draft a professional response. ${coach} Focus on tone, structure, and professional vocabulary. After each draft, present a new, harder email challenge as the NEXT QUESTION.`,
+      opener: `Here is an escalation email you just received. Draft your response:\n\n---\n*Subject: URGENT — this is taking far too long*\n\nHi,\n\nI'm extremely disappointed with the lack of progress. We're well behind schedule and I've had no proactive updates from your side. If this isn't resolved by end of week, I'll escalate to your management.\n\nRegards,\nA frustrated stakeholder*\n\n---\n\nHow would you respond? Write your reply now.`,
+    },
+  };
+}
+
+// Build a default set so the UI works before onboarding completes.
+scenarios = buildScenarios('professional');
 
 // ─── CLAUDE API ──────────────────────────────────────────────────────────────
 async function callClaude(userMessage) {
@@ -904,6 +935,10 @@ function startApp() {
   state.userRole = document.getElementById('userRole').value.trim() || 'Business Professional';
   state.userGoal = document.getElementById('userGoal').value;
 
+  // Build scenarios tailored to the user's profession
+  scenarios = buildScenarios(state.userRole);
+  refreshScenarioUI();
+
   document.getElementById('headerLevel').textContent = state.userLevel;
   document.getElementById('levelDisplay').textContent = state.userLevel;
   document.getElementById('onboarding').style.display = 'none';
@@ -912,10 +947,24 @@ function startApp() {
   updateStreak();
   startTimer();
 
-  // Load first scenario opener
+  // Load first scenario opener (interview, tailored to role)
+  state.currentScenario = 'interview';
+  document.getElementById('scenarioTitle').textContent = scenarios.interview.title;
+  document.getElementById('scenarioDesc').textContent = scenarios.interview.desc;
   addMessage('coach', renderMarkdown(scenarios.interview.opener), true);
 
   document.getElementById('userInput').focus();
+}
+
+// Update sidebar scenario labels to reflect the role-tailored titles
+function refreshScenarioUI() {
+  document.querySelectorAll('.scenario-btn').forEach(btn => {
+    const key = btn.dataset.scenario;
+    const s = scenarios[key];
+    if (!s) return;
+    const label = btn.querySelector('.scenario-label');
+    if (label) label.textContent = s.desc.length > 38 ? s.desc.slice(0, 38) + '…' : s.desc;
+  });
 }
 </script>
 </body>
